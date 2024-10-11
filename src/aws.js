@@ -62,6 +62,24 @@ async function startEc2Instance(label, githubRegistrationToken) {
     });
     const result = await ec2.runInstances(params).promise();
     const ec2InstanceId = result.Instances[0].InstanceId;
+    ec2.describeSubnets({ SubnetId: config.input.subnetId }, (err, data) => {
+      if (err) {
+        console.error('Error', err);
+      } else {
+        // Access the AssignIpv6AddressOnCreation value from the response
+        const subnet = data.Subnets[0];
+        const isAssignIpv6Enabled = subnet.AssignIpv6AddressOnCreation;
+
+        ccore.info(`AssignIpv6AddressOnCreation: ${isAssignIpv6Enabled}`);
+
+        // Check if the value is set to false
+        if (isAssignIpv6Enabled === false) {
+          core.info('AssignIpv6AddressOnCreation is correctly set to false.');
+        } else {
+          core.info('AssignIpv6AddressOnCreation is still enabled.');
+        }
+      }
+    });
     core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
     return ec2InstanceId;
   } catch (error) {
