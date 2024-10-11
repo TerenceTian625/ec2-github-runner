@@ -62,7 +62,7 @@ async function startEc2Instance(label, githubRegistrationToken) {
     });
     const result = await ec2.runInstances(params).promise();
     const ec2InstanceId = result.Instances[0].InstanceId;
-    await ec2.describeSubnets({ SubnetId: config.input.subnetId }, (err, data) => {
+    await ec2.describeSubnets({ SubnetIds: [config.input.subnetId] }, (err, data) => {
       if (err) {
         console.error('Error', err);
       } else {
@@ -80,7 +80,7 @@ async function startEc2Instance(label, githubRegistrationToken) {
         }
       }
     });
-    core.info("check update")
+    core.info('check update1');
     core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
     return ec2InstanceId;
   } catch (error) {
