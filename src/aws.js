@@ -56,8 +56,11 @@ async function startEc2Instance(label, githubRegistrationToken) {
         Value: false,
       },
     });
+    const data = await ec2.describeSubnets({ SubnetIds: [config.input.subnetId] }).promise();
+    const subnet = data.Subnets[0];
+    const isAssignIpv6Enabled = subnet.AssignIpv6AddressOnCreation;
+    core.info(`AssignIpv6AddressOnCreation: ${isAssignIpv6Enabled}`);
     const result = await ec2.runInstances(params).promise();
-    core.info(result.Instances[0]);
     const ec2InstanceId = result.Instances[0].InstanceId;
     core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
     return ec2InstanceId;
