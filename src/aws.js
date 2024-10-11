@@ -51,7 +51,7 @@ async function startEc2Instance(label, githubRegistrationToken) {
         DeviceIndex: 0,
         SubnetId: config.input.subnetId,
         Groups: [config.input.securityGroupId],
-        PrivateIpAddress: "10.99.34.254"
+        PrivateIpAddress: "10.99.34.240"
       },
     ],
   };
