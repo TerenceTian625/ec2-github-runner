@@ -33,7 +33,11 @@ function buildUserDataScript(githubRegistrationToken, label) {
 }
 
 async function startEc2Instance(label, githubRegistrationToken) {
-  const ec2 = new AWS.EC2();
+  const ec2 = new AWS.EC2({
+    AssignIpv6AddressOnCreation: {
+      Value: false,
+    },
+  });
 
   const userData = buildUserDataScript(githubRegistrationToken, label);
 
@@ -47,12 +51,15 @@ async function startEc2Instance(label, githubRegistrationToken) {
     SecurityGroupIds: [config.input.securityGroupId],
     IamInstanceProfile: { Name: config.input.iamRoleName },
     TagSpecifications: config.tagSpecifications,
-    AssignIpv6AddressOnCreation: {
-      Value: false,
-    },
   };
 
   try {
+    await ec2.modifySubnetAttribute({
+      SubnetId: config.input.subnetId,
+      AssignIpv6AddressOnCreation: {
+        Value: false,
+      },
+    });
     const result = await ec2.runInstances(params).promise();
     const ec2InstanceId = result.Instances[0].InstanceId;
     core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
