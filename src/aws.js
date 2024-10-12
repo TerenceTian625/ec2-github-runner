@@ -47,11 +47,10 @@ async function startEc2Instance(label, githubRegistrationToken) {
     TagSpecifications: config.tagSpecifications,
     NetworkInterfaces: [
       {
-        AssociatePublicIpAddress: false,
+        AssociatePublicIpAddress: true,
         DeviceIndex: 0,
         SubnetId: config.input.subnetId,
         Groups: [config.input.securityGroupId],
-        PrivateIpAddress: "10.99.34.240"
       },
     ],
   };
