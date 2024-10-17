@@ -49,7 +49,6 @@ async function startEc2Instance(label, githubRegistrationToken) {
       {
         DeviceIndex: 0,
         SubnetId: config.input.subnetId,
-        assign_ipv6_address_on_creation: false,
         Groups: [config.input.securityGroupId],
       },
     ],
