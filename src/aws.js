@@ -47,7 +47,7 @@ async function startEc2Instance(label, githubRegistrationToken) {
     TagSpecifications: config.tagSpecifications,
     NetworkInterfaces: [
       {
-        AssociatePublicIpAddress: true,
+        AssociatePublicIpAddress: false,
         DeviceIndex: 0,
         SubnetId: config.input.subnetId,
         Groups: [config.input.securityGroupId],
