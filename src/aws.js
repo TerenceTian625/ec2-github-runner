@@ -65,7 +65,7 @@ async function launchInstanceWithSecurityGroup(securityGroupId, userData, ec2) {
 }
 
 async function startEc2Instance(label, githubRegistrationToken) {
-  const ec2 = AWS.EC2();
+  const ec2 = new AWS.EC2();
   const userData = buildUserDataScript(githubRegistrationToken, label);
   const securityGroupId = config.input.securityGroupId;
 
