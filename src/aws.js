@@ -68,22 +68,6 @@ async function startEc2Instance(label, githubRegistrationToken) {
   const ec2 = AWS.EC2();
   const userData = buildUserDataScript(githubRegistrationToken, label);
   const securityGroupId = config.input.securityGroupId;
-  // const params = {
-  //   ImageId: config.input.ec2ImageId,
-  //   InstanceType: config.input.ec2InstanceType,
-  //   MinCount: 1,
-  //   MaxCount: 1,
-  //   UserData: Buffer.from(userData.join('\n')).toString('base64'),
-  //   IamInstanceProfile: { Name: config.input.iamRoleName },
-  //   TagSpecifications: config.tagSpecifications,
-  //   NetworkInterfaces: [
-  //     {
-  //       DeviceIndex: 0,
-  //       SubnetId: config.input.subnetId,
-  //       Groups: [securityGroupId],
-  //     },
-  //   ],
-  // };
 
   try {
     await addInboundRuleToSecurityGroup(securityGroupId, ec2);
