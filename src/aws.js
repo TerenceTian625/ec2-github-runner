@@ -32,56 +32,40 @@ function buildUserDataScript(githubRegistrationToken, label) {
   }
 }
 
-import { EC2Client, AuthorizeSecurityGroupIngressCommand, RunInstancesCommand } from '@aws-sdk/client-ec2';
-
 async function addInboundRuleToSecurityGroup(securityGroupId, ec2) {
-  try {
-    const params = {
-      GroupId: securityGroupId,
-      IpPermissions: [
-        {
-          IpProtocol: 'tcp',
-          FromPort: 443,
-          ToPort: 443,
-          IpRanges: [{ CidrIp: '0.0.0.0/0' }], // Allows all IPs, you can restrict this.
-        },
-      ],
-    };
+  const params = {
+    GroupId: securityGroupId,
+    IpPermissions: [
+      {
+        IpProtocol: 'tcp',
+        FromPort: 443,
+        ToPort: 443,
+        IpRanges: [{ CidrIp: '0.0.0.0/0' }], // Allows all IPs, you can restrict this.
+      },
+    ],
+  };
 
-    const command = new AuthorizeSecurityGroupIngressCommand(params);
-    await ec2.send(command);
-    core.info('Inbound rule added to security group');
-  } catch (err) {
-    core.error('Error adding inbound rule:', err);
-  }
+  return ec2.authorizeSecurityGroupIngress(params).promise();
 }
 
 async function launchInstanceWithSecurityGroup(securityGroupId, userData, ec2) {
-  try {
-    // Define the parameters for launching the instance
-    const runParams = {
-      ImageId: config.input.ec2ImageId, // Replace with your AMI ID
-      InstanceType: config.input.ec2InstanceType, // Replace with your instance type
-      MinCount: 1,
-      MaxCount: 1,
-      UserData: Buffer.from(userData.join('\n')).toString('base64'),
-      IamInstanceProfile: { Name: config.input.iamRoleName },
-      TagSpecifications: config.tagSpecifications,
-      SubnetId: config.input.subnetId,
-      SecurityGroupIds: [securityGroupId],
-    };
+  const runParams = {
+    ImageId: config.input.ec2ImageId, // Replace with your AMI ID
+    InstanceType: config.input.ec2InstanceType, // Replace with your instance type
+    MinCount: 1,
+    MaxCount: 1,
+    UserData: Buffer.from(userData.join('\n')).toString('base64'),
+    IamInstanceProfile: { Name: config.input.iamRoleName },
+    TagSpecifications: config.tagSpecifications,
+    SubnetId: config.input.subnetId,
+    SecurityGroupIds: [securityGroupId],
+  };
 
-    const command = new RunInstancesCommand(runParams);
-    const response = await ec2.send(command);
-    core.info('EC2 Instance launched:', response.Instances[0].InstanceId);
-    return response.Instances[0].InstanceId;
-  } catch (err) {
-    core.error('Error launching EC2 instance:', err);
-  }
+  return ec2.runInstances(runParams).promise();
 }
 
 async function startEc2Instance(label, githubRegistrationToken) {
-  const ec2 = new EC2Client();
+  const ec2 = AWS.EC2();
   const userData = buildUserDataScript(githubRegistrationToken, label);
   const securityGroupId = config.input.securityGroupId;
   // const params = {
@@ -103,7 +87,7 @@ async function startEc2Instance(label, githubRegistrationToken) {
 
   try {
     await addInboundRuleToSecurityGroup(securityGroupId, ec2);
-    const ec2InstanceId = await launchInstanceWithSecurityGroup(securityGroupId, userData, ec2);
+    const ec2InstanceId = await launchInstanceWithSecurityGroup(securityGroupId, userData, ec2).Instances[0].InstanceId;
     core.info(`IP address: ${ec2InstanceId}`);
     core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
     return ec2InstanceId;
