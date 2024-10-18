@@ -81,7 +81,7 @@ async function launchInstanceWithSecurityGroup(securityGroupId, userData, ec2) {
 }
 
 async function startEc2Instance(label, githubRegistrationToken) {
-  const ec2 = new AWS.EC2();
+  const ec2 = new EC2Client();
   const userData = buildUserDataScript(githubRegistrationToken, label);
   const securityGroupId = config.input.securityGroupId;
   // const params = {
@@ -104,7 +104,7 @@ async function startEc2Instance(label, githubRegistrationToken) {
   try {
     await addInboundRuleToSecurityGroup(securityGroupId, ec2);
     const ec2InstanceId = await launchInstanceWithSecurityGroup(securityGroupId, userData, ec2);
-    core.info(`IP address: ${result.Instances[0].PrivateIpAddress}`);
+    core.info(`IP address: ${ec2InstanceId}`);
     core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
     return ec2InstanceId;
   } catch (error) {
