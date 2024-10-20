@@ -70,7 +70,7 @@ async function startEc2Instance(label, githubRegistrationToken) {
 
   try {
     // await addInboundRuleToSecurityGroup(securityGroupId, ec2);
-    const ec2InstanceId = await launchInstanceWithSecurityGroup(config, userData, ec2).Instances[0].InstanceId;
+    const ec2InstanceId = (await launchInstanceWithSecurityGroup(config, userData, ec2)).Instances[0].InstanceId;
     core.info(`IP address: ${ec2InstanceId}`);
     core.info(`AWS EC2 instance ${ec2InstanceId} is started`);
     return ec2InstanceId;
