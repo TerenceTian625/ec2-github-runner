@@ -32,21 +32,21 @@ function buildUserDataScript(githubRegistrationToken, label) {
   }
 }
 
-async function addInboundRuleToSecurityGroup(securityGroupId, ec2) {
-  const params = {
-    GroupId: securityGroupId,
-    IpPermissions: [
-      {
-        IpProtocol: 'tcp',
-        FromPort: 443,
-        ToPort: 443,
-        IpRanges: [{ CidrIp: '0.0.0.0/0' }], // Allows all IPs, you can restrict this.
-      },
-    ],
-  };
+// async function addInboundRuleToSecurityGroup(securityGroupId, ec2) {
+//   const params = {
+//     GroupId: securityGroupId,
+//     IpPermissions: [
+//       {
+//         IpProtocol: 'tcp',
+//         FromPort: 443,
+//         ToPort: 443,
+//         IpRanges: [{ CidrIp: '0.0.0.0/0' }], // Allows all IPs, you can restrict this.
+//       },
+//     ],
+//   };
 
-  return ec2.authorizeSecurityGroupIngress(params).promise();
-}
+//   return ec2.authorizeSecurityGroupIngress(params).promise();
+// }
 
 async function launchInstanceWithSecurityGroup(securityGroupId, userData, ec2) {
   const runParams = {
